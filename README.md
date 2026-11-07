@@ -1,5 +1,21 @@
 # Shorter Chains via Macro Transitions: Constant-Factor Compression for Chain-of-Thought Counter Simulation
 
+**Accepted to Transactions on Machine Learning Research (TMLR), Beyond PDF track.**
+[OpenReview](https://openreview.net/forum?id=HGmCGa0Q3O)
+
+[Azmine Toushik Wasi](https://openreview.net/profile?id=~Azmine_Toushik_Wasi1)<sup>1,4</sup>,
+[MD Shafikul Islam](https://openreview.net/profile?id=~MD_Shafikul_Islam1)<sup>2,4</sup>,
+[Md Manjurul Ahsan](https://openreview.net/profile?id=~Md_Manjurul_Ahsan1)<sup>3,4</sup>
+
+<sup>1</sup>University of Surrey, UK
+<sup>2</sup>Louisiana State University
+<sup>3</sup>University of Oklahoma
+<sup>4</sup>Computational Intelligence and Operations Laboratory, Bangladesh
+
+## Abstract
+
+Chain-of-thought (CoT) constructions that make transformers Turing complete typically simulate a counter machine, one transition per generated token, making autoregressive length proportional to the simulated runtime. Since serial generation is a key computational cost, we ask whether this length can be reduced while preserving the recognized language and the generalization properties of the simulation. We introduce two machine rewrites with exact recognition guarantees. First, order k macro transitions combine k reachable base transitions into one token. We prove that the resulting guards retain the per-counter threshold structure, determinism is preserved, and a run of length T is compressed to about T divided by k steps for fixed k, a constant factor reduction that leaves the asymptotic serial complexity unchanged, with a vocabulary bounded by the base vocabulary raised to k. Second, base b counting compresses monotone decrement bursts by processing b counter units per token. Both rewrites remain within the same CoT counter programming class, allowing the base construction's length generalization result to transfer under its assumptions. Experiments on six synthetic counter machine tasks, including equal-count and three-sum arithmetic verification, show that transformers trained on compressed traces retain length generalization under moderate compression while achieving the predicted reductions in trace length, and that this retention degrades once compression becomes large relative to the counting range. We observe corresponding reductions in generation latency, attention operations, and key value cache size. Accuracy degrades as compression becomes aggressive relative to the counting range, consistent with our analysis. We further characterize reachable vocabulary growth and quantify the associated data scaling cost.
+
 ## Repository layout
 
 ```
