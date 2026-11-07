@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+  :root{--ink:#1a1a1a;--muted:#6b7280;--line:#e5e7eb;--bg:#ffffff;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+  .wrap{max-width:820px;margin:0 auto;padding:14px 12px 20px}
+  h4{margin:0 0 2px;font-size:15px;font-weight:600}
+  .sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+  .controls{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+  select{font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink)}
+  .lab{font-size:11.5px;color:var(--muted);display:block;margin-bottom:3px}
+  .panels{display:flex;gap:14px;flex-wrap:wrap}
+  .panel{flex:1;min-width:320px}
+  .ptitle{font-size:12.5px;color:var(--ink);font-weight:600;margin:4px 0}
+  svg{width:100%;height:auto;display:block}
+  .legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);margin-top:2px}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h4>Trace length and length generalization across compression</h4>
+  <p class="sub">Earlier CPU-scale runs, separate from GPU Table 1 and the three-seed study: a two-layer transformer (about 6.7&#215;10<sup>4</sup> parameters, no positional encoding) trained on synthetic traces. EM0 is in-range exact match; EM1 and EM2 are two splits longer than any training input.</p>
+  <div class="controls">
+    <div><span class="lab">operator</span>
+      <select id="fam"><option value="macro">macro order k</option><option value="baseb">base b</option></select>
+    </div>
+    <div><span class="lab">task</span><select id="task"></select></div>
+  </div>
+  <div class="panels">
+    <div class="panel">
+      <div class="ptitle">mean trace length</div>
+      <svg id="svL" viewBox="0 0 360 220"></svg>
+    </div>
+    <div class="panel">
+      <div class="ptitle">exact match by test split</div>
+      <svg id="svE" viewBox="0 0 360 220"></svg>
+      <div class="legend"><span><i class="sw" style="background:#93c5fd"></i>EM0</span><span><i class="sw" style="background:#3b82f6"></i>EM1</span><span><i class="sw" style="background:#1e3a8a"></i>EM2</span></div>
+    </div>
+  </div>
+  <p class="note" id="note"></p>
+</div>
+<script>
+(function(){
+  var DATA={
+    macro:{
+      comparison:{param:[1,2,3],trace:[4.10,2.27,1.68],em0:[1,1,1],em1:[1,1,1],em2:[1,1,0.92],vocab:[9,12,15]},
+      parity:{param:[1,2,4],trace:[6.23,3.36,1.92],em0:[1,1,1],em1:[1,1,1],em2:[1,0.98,1],vocab:[9,11,15]},
+      "unary-mult":{param:[1,2],trace:[42.65,21.50],em0:[1,1],em1:[1,1],em2:[1,1],vocab:[16,27]}
+    },
+    baseb:{
+      parity:{param:[1,2,4],trace:[6.15,3.83,2.67],em0:[1,1,1],em1:[1,1,0.97],em2:[0.90,0.97,0.91],vocab:[9,11,15]},
+      mod3:{param:[1,2,4],trace:[6.72,4.11,2.82],em0:[1,1,1],em1:[1,1,0.81],em2:[1,1,0.10],vocab:[11,14,20]}
+    }
+  };
+  var symbol={macro:'k',baseb:'b'};
+  function el(t,a,x){var e=document.createElementNS('http://www.w3.org/2000/svg',t);for(var k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;return e;}
+  function clear(s){while(s.firstChild)s.removeChild(s.firstChild);}
+  function fillTasks(){
+    var fam=document.getElementById('fam').value;var sel=document.getElementById('task');
+    var cur=sel.value;sel.innerHTML='';
+    var keys=Object.keys(DATA[fam]);
+    keys.forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});
+    sel.value = (keys.indexOf(cur)>=0) ? cur : keys[0];
+  }
+  function barL(){
+    var fam=document.getElementById('fam').value,task=document.getElementById('task').value,d=DATA[fam][task];
+    var s=document.getElementById('svL');clear(s);
+    var W=360,H=220,padL=40,padR=10,padT=12,padB=30,x0=padL,x1=W-padR,y0=H-padB,y1=padT;
+    var maxv=Math.max.apply(null,d.trace)*1.15;
+    s.appendChild(el('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'#9ca3af'}));
+    [0,0.5,1].forEach(function(f){var v=maxv*f;var yy=y0-(v/maxv)*(y0-y1);s.appendChild(el('line',{x1:x0,y1:yy,x2:x1,y2:yy,stroke:'#eef2f7'}));s.appendChild(el('text',{x:x0-6,y:yy+4,'text-anchor':'end','font-size':10,fill:'#9ca3af'},v.toFixed(0)));});
+    var n=d.param.length,bw=(x1-x0)/n*0.5;
+    d.param.forEach(function(p,i){
+      var cx=x0+(i+0.5)/n*(x1-x0);var h=(d.trace[i]/maxv)*(y0-y1);
+      s.appendChild(el('rect',{x:cx-bw/2,y:y0-h,width:bw,height:h,rx:3,fill:'#2563eb','fill-opacity':0.85}));
+      s.appendChild(el('text',{x:cx,y:y0-h-4,'text-anchor':'middle','font-size':10.5,fill:'#1e3a8a','font-weight':600},d.trace[i].toFixed(2)));
+      s.appendChild(el('text',{x:cx,y:y0+16,'text-anchor':'middle','font-size':11,fill:'#6b7280'},symbol[fam]+'='+p));
+    });
+    s.appendChild(el('text',{x:(x0+x1)/2,y:H-2,'text-anchor':'middle','font-size':10.5,fill:'#9ca3af'},'tokens per trace'));
+  }
+  function barE(){
+    var fam=document.getElementById('fam').value,task=document.getElementById('task').value,d=DATA[fam][task];
+    var s=document.getElementById('svE');clear(s);
+    var W=360,H=220,padL=34,padR=10,padT=12,padB=30,x0=padL,x1=W-padR,y0=H-padB,y1=padT;
+    s.appendChild(el('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'#9ca3af'}));
+    [0,0.5,1].forEach(function(v){var yy=y0-v*(y0-y1);s.appendChild(el('line',{x1:x0,y1:yy,x2:x1,y2:yy,stroke:'#eef2f7'}));s.appendChild(el('text',{x:x0-6,y:yy+4,'text-anchor':'end','font-size':10,fill:'#9ca3af'},v.toFixed(1)));});
+    var cols=['#93c5fd','#3b82f6','#1e3a8a'],keys=['em0','em1','em2'];
+    var n=d.param.length,group=(x1-x0)/n,bw=group*0.24;
+    d.param.forEach(function(p,i){
+      var gx=x0+(i+0.5)*group;
+      keys.forEach(function(kk,j){
+        var v=d[kk][i];var h=v*(y0-y1);var bx=gx+(j-1)*bw;
+        s.appendChild(el('rect',{x:bx-bw/2+bw*0.05,y:y0-h,width:bw*0.9,height:h,rx:2,fill:cols[j]}));
+      });
+      s.appendChild(el('text',{x:gx,y:y0+16,'text-anchor':'middle','font-size':11,fill:'#6b7280'},symbol[fam]+'='+p));
+    });
+    s.appendChild(el('text',{x:(x0+x1)/2,y:H-2,'text-anchor':'middle','font-size':10.5,fill:'#9ca3af'},'exact match (0 to 1)'));
+  }
+  function note(){
+    var fam=document.getElementById('fam').value,task=document.getElementById('task').value,d=DATA[fam][task];
+    var ratio=(d.trace[0]/d.trace[d.trace.length-1]).toFixed(2);
+    var el2=document.getElementById('note');
+    var last=d.param.length-1;
+    el2.innerHTML='On <b>'+task+'</b>, raising '+symbol[fam]+' from '+d.param[0]+' to '+d.param[last]+' shortens the trace by <b>'+ratio+'&times;</b> (vocabulary '+d.vocab[0]+' &#8594; '+d.vocab[last]+'). Exact match on the longest split ends at <b>'+d.em2[last].toFixed(2)+'</b>.';
+  }
+  function redraw(){barL();barE();note();}
+  document.getElementById('fam').addEventListener('change',function(){fillTasks();redraw();});
+  document.getElementById('task').addEventListener('change',redraw);
+  fillTasks();redraw();
+})();
+</script>
+</body>
+</html>
+

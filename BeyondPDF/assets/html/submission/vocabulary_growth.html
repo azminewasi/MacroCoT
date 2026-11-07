@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+  :root{--ink:#1a1a1a;--muted:#6b7280;--line:#e5e7eb;--bg:#ffffff;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+  .wrap{max-width:820px;margin:0 auto;padding:14px 12px 20px}
+  h4{margin:0 0 2px;font-size:15px;font-weight:600}
+  .sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+  .controls{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+  select{font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff}
+  .lab{font-size:11.5px;color:var(--muted);display:block;margin-bottom:3px}
+  .toggle{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:14px}
+  svg{width:100%;height:auto;display:block}
+  .legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-top:4px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h4>The macro vocabulary stays far below its worst case</h4>
+  <p class="sub">The general bound (Proposition 1) is &#8721;<sub>r=1..k</sub>|&#916;|<sup>r</sup>. Reachable counts the guard-satisfiable blocks actually enumerated; merged applies canonical merging. For parity and mod 3, reachable counts equal 2(k+1) and 3(k+1), attaining the corrected Proposition 3 bound. The general bound and plotted counts are unchanged.</p>
+  <div class="controls">
+    <div><span class="lab">task</span>
+      <select id="task">
+        <option value="parity">parity</option>
+        <option value="mod3">mod-3</option>
+        <option value="comparison">comparison</option>
+        <option value="unary-mult" selected>unary-mult</option>
+      </select>
+    </div>
+    <label class="toggle"><input type="checkbox" id="log" checked/> log scale</label>
+  </div>
+  <svg id="viz" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet"></svg>
+  <div class="legend">
+    <span><i class="sw" style="background:#cbd5e1"></i>worst-case bound</span>
+    <span><i class="sw" style="background:#2563eb"></i>reachable</span>
+    <span><i class="sw" style="background:#16a34a"></i>merged</span>
+  </div>
+  <p class="note" id="note"></p>
+</div>
+<script>
+(function(){
+  var DATA={
+    parity:{delta:4,k:[2,3,4],bound:[20,84,340],reachable:[6,8,10],merged:[6,8,10]},
+    mod3:{delta:6,k:[2,3,4],bound:[42,258,1554],reachable:[9,12,15],merged:[9,12,15]},
+    comparison:{delta:4,k:[2,3,4],bound:[20,84,340],reachable:[7,10,13],merged:[7,10,13]},
+    "unary-mult":{delta:10,k:[2,3,4],bound:[110,1110,11110],reachable:[21,38,63],merged:[21,38,63]}
+  };
+  function el(t,a,x){var e=document.createElementNS('http://www.w3.org/2000/svg',t);for(var k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;return e;}
+  function clear(s){while(s.firstChild)s.removeChild(s.firstChild);}
+  function draw(){
+    var task=document.getElementById('task').value,d=DATA[task],useLog=document.getElementById('log').checked;
+    var s=document.getElementById('viz');clear(s);
+    var W=800,H=300,padL=60,padR=14,padT=14,padB=34,x0=padL,x1=W-padR,y0=H-padB,y1=padT;
+    var maxv=Math.max.apply(null,d.bound)*1.1,minv=1;
+    function sy(v){if(useLog){var lo=0,hi=Math.log10(maxv);return y0-(Math.log10(Math.max(v,1))-lo)/(hi-lo)*(y0-y1);}return y0-(v/maxv)*(y0-y1);}
+    s.appendChild(el('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'#9ca3af'}));
+    s.appendChild(el('line',{x1:x0,y1:y1,x2:x0,y2:y0,stroke:'#9ca3af'}));
+    var ticks=useLog?[1,10,100,1000,10000]:[0,maxv*0.25,maxv*0.5,maxv*0.75,maxv];
+    ticks.forEach(function(v){if(v>maxv*1.2)return;var yy=sy(v);s.appendChild(el('line',{x1:x0,y1:yy,x2:x1,y2:yy,stroke:'#eef2f7'}));s.appendChild(el('text',{x:x0-8,y:yy+4,'text-anchor':'end','font-size':10.5,fill:'#9ca3af'},useLog?v:Math.round(v)));});
+    var cols={bound:'#cbd5e1',reachable:'#2563eb',merged:'#16a34a'};
+    var series=['bound','reachable','merged'];
+    var n=d.k.length,group=(x1-x0)/n,bw=group*0.2;
+    d.k.forEach(function(kk,i){
+      var gx=x0+(i+0.5)*group;
+      series.forEach(function(name,j){
+        var v=d[name][i];var bx=gx+(j-1)*bw*1.15;var yy=sy(v);
+        s.appendChild(el('rect',{x:bx-bw/2,y:yy,width:bw,height:y0-yy,rx:2,fill:cols[name]}));
+        s.appendChild(el('text',{x:bx,y:yy-3,'text-anchor':'middle','font-size':9.5,fill:'#475569'},v));
+      });
+      s.appendChild(el('text',{x:gx,y:y0+16,'text-anchor':'middle','font-size':11.5,fill:'#6b7280'},'k='+kk));
+    });
+    s.appendChild(el('text',{x:x0-46,y:(y0+y1)/2,'text-anchor':'middle','font-size':11,fill:'#9ca3af',transform:'rotate(-90 '+(x0-46)+' '+((y0+y1)/2)+')'},'number of tokens'));
+    var last=d.k.length-1;
+    document.getElementById('note').innerHTML='On <b>'+task+'</b> (|&#916;|='+d.delta+'), at k='+d.k[last]+' the bound is <b>'+d.bound[last].toLocaleString()+'</b> but only <b>'+d.reachable[last]+'</b> tokens are reachable. Merging removes nothing further here, because determinism already gives distinct feasible blocks disjoint guards.';
+  }
+  document.getElementById('task').addEventListener('change',draw);
+  document.getElementById('log').addEventListener('change',draw);
+  draw();
+})();
+</script>
+</body>
+</html>
+
