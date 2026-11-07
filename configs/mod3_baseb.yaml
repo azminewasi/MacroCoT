@@ -1,0 +1,20 @@
+# Base-b counting on mod-3 divisibility (accept iff (#a) mod 3 == 0).
+task: mod3
+macro_k: 1
+base_b: 2
+train_max: 16
+ood1_max: 24
+ood2_max: 32
+n_train: 1300
+n_test: 48
+d_model: 64
+n_layers: 2
+n_heads: 4
+d_ff: 128
+pos: nope
+steps: 1500
+batch_size: 64
+lr: 0.003
+eval_interval: 250
+seed: 0
+tag: demo

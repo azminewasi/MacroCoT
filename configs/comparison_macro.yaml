@@ -1,0 +1,21 @@
+# Order-k macro transitions on the comparison task (accept iff m > n for a^m b^n).
+# Increasing macro_k collapses k base transitions into one macro token.
+task: comparison
+macro_k: 2
+base_b: 1
+train_max: 16
+ood1_max: 24
+ood2_max: 32
+n_train: 1400
+n_test: 48
+d_model: 64
+n_layers: 2
+n_heads: 4
+d_ff: 128
+pos: nope
+steps: 1500
+batch_size: 64
+lr: 0.003
+eval_interval: 250
+seed: 0
+tag: demo

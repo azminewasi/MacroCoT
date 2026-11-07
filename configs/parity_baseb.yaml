@@ -1,0 +1,21 @@
+# Base-b counting on the parity task (count symbol a over an {a,b} string).
+# Increasing base_b shortens the decrement burst by about a factor of b.
+task: parity
+macro_k: 1
+base_b: 2
+train_max: 14
+ood1_max: 22
+ood2_max: 30
+n_train: 1200
+n_test: 48
+d_model: 64
+n_layers: 2
+n_heads: 4
+d_ff: 128
+pos: nope
+steps: 1200
+batch_size: 64
+lr: 0.003
+eval_interval: 100
+seed: 0
+tag: demo
