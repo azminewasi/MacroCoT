@@ -1,7 +1,12 @@
 # Shorter Chains via Macro Transitions: Constant-Factor Compression for Chain-of-Thought Counter Simulation
 
-**Accepted to Transactions on Machine Learning Research (TMLR), Beyond PDF track.**
-[OpenReview](https://openreview.net/forum?id=HGmCGa0Q3O)
+- **Accepted to Transactions on Machine Learning Research (TMLR), Beyond PDF track.**
+- [OpenReview](https://openreview.net/forum?id=HGmCGa0Q3O)
+- [Website](https://azminewasi.github.io/research/macrocot/)
+- [GitHub](https://github.com/azminewasi/MacroCoT)
+- [Blog](https://ciolresearchlab.substack.com/p/macrocot-teaching-ai-to-think-in)
+
+
 
 [Azmine Toushik Wasi](https://openreview.net/profile?id=~Azmine_Toushik_Wasi1)<sup>1,4</sup>,
 [MD Shafikul Islam](https://openreview.net/profile?id=~MD_Shafikul_Islam1)<sup>2,4</sup>,
@@ -149,6 +154,19 @@ exact and do not depend on training: base-machine determinism and counter
 recovery, macro acceptance with trace length exactly ceil(T / k), base-b
 acceptance with trace length ceil(V / b) plus a constant, and the macro
 vocabulary bound. These pass independently of any learning result.
+
+## Citation
+```
+@article{wasi2026shorter,
+  title   = {Shorter Chains via Macro Transitions: Constant-Factor
+             Compression for Chain-of-Thought Counter Simulation},
+  author  = {Wasi, Azmine Toushik and Islam, MD Shafikul and
+             Ahsan, Md Manjurul},
+  journal = {Transactions on Machine Learning Research},
+  year    = {2026},
+  url     = {https://openreview.net/forum?id=HGmCGa0Q3O}
+}
+```
 
 ## License
 
