@@ -1,21 +1,14 @@
 # Shorter Chains via Macro Transitions: Constant-Factor Compression for Chain-of-Thought Counter Simulation
 
 - **Accepted to Transactions on Machine Learning Research (TMLR), Beyond PDF track.**
-- [OpenReview](https://openreview.net/forum?id=HGmCGa0Q3O)
-- [Website](https://azminewasi.github.io/research/macrocot/)
-- [GitHub](https://github.com/azminewasi/MacroCoT)
-- [Blog](https://ciolresearchlab.substack.com/p/macrocot-teaching-ai-to-think-in)
+- [OpenReview](https://openreview.net/forum?id=HGmCGa0Q3O) Page
+- [Project Website](https://azminewasi.github.io/research/macrocot/)
+- [Codebase in GitHub](https://github.com/azminewasi/MacroCoT)
+- [Blog in Substack](https://ciolresearchlab.substack.com/p/macrocot-teaching-ai-to-think-in)
+- Authors: [Azmine Toushik Wasi](https://azminewasi.github.io/),
+MD Shafikul Islam,
+Md Manjurul Ahsan
 
-
-
-[Azmine Toushik Wasi](https://openreview.net/profile?id=~Azmine_Toushik_Wasi1)<sup>1,4</sup>,
-[MD Shafikul Islam](https://openreview.net/profile?id=~MD_Shafikul_Islam1)<sup>2,4</sup>,
-[Md Manjurul Ahsan](https://openreview.net/profile?id=~Md_Manjurul_Ahsan1)<sup>3,4</sup>
-
-<sup>1</sup>University of Surrey, UK
-<sup>2</sup>Louisiana State University
-<sup>3</sup>University of Oklahoma
-<sup>4</sup>Computational Intelligence and Operations Laboratory, Bangladesh
 
 ## Abstract
 
